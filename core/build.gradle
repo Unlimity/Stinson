@@ -9,3 +9,78 @@ sourceSets {
 dependencies {
     implementation libraries.kotlin_stdlib
 }
+
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = stinson.group
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'jar'
+            groupId stinson.group
+            artifactId stinson_core.artifact
+
+            name stinson.name
+            description stinson.description
+            url stinson.site
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                }
+            }
+
+            scm {
+                connection stinson.github
+                developerConnection stinson.github
+                url stinson.site
+            }
+        }
+    }
+}
+
+apply plugin: 'com.jfrog.bintray'
+
+version = stinson.version
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.kotlin.srcDirs
+}
+
+//task javadocJar(type: Jar, dependsOn: dokka) {
+//    classifier = 'javadoc'
+//    from dokka.outputDirectory
+//}
+
+artifacts {
+//    archives javadocJar
+    archives sourcesJar
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+
+    configurations = ['archives']
+
+    pkg {
+        repo = 'maven'
+        name = stinson.name
+        desc = stinson.description
+        vcsUrl = stinson.github
+        publish = true
+        publicDownloadNumbers = true
+
+        licenses = ['Apache-2.0']
+
+        version {
+            name = stinson.version
+            desc = stinson_core.versionDesc
+            vcsTag = stinson.version
+            released = new Date()
+        }
+    }
+}

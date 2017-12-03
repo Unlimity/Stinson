@@ -9,6 +9,8 @@ buildscript {
     dependencies {
         classpath libraries.android_gradle
         classpath libraries.kotlin_gradle
+        classpath libraries.bintray
+        classpath libraries.maven
     }
 }
 

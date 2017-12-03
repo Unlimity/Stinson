@@ -1,6 +1,8 @@
 ext.versions = [
         android_gradle      : '3.0.1',
         kotlin              : '1.2.0',
+        bintray             : '1.7.3',
+        maven               : '1.5',
         rx                  : '2.1.7',
         support             : '27.0.2'
 ]
@@ -9,6 +11,39 @@ ext.libraries = [
         android_gradle      : "com.android.tools.build:gradle:$versions.android_gradle",
         kotlin_gradle       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
         kotlin_stdlib       : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
+        bintray             : "com.jfrog.bintray.gradle:gradle-bintray-plugin:$versions.bintray",
+        maven               : "com.github.dcendents:android-maven-gradle-plugin:$versions.maven",
         rx                  : "io.reactivex.rxjava2:rxjava:$versions.rx",
         support_appcompat   : "com.android.support:appcompat-v7:$versions.support"
+]
+
+def alias = System.getenv('BINTRAY_ALIAS')
+
+if (alias == null) {
+    alias = ''
+}
+
+ext.stinson = [
+        group           : 'com.alviere.stinson',
+        name            : 'stinson',
+        description     : 'Elm architecture on Kotlin steroids for Android',
+        versionCode     : 1,
+        version         : "1.0.0$alias",
+        site            : 'https://github.com/alviere/stinson',
+        github          : 'https://github.com/alviere/stinson.git'
+]
+
+ext.stinson_core = [
+        artifact        : 'core',
+        versionDesc     : "Stinson Core 1.0.0$alias"
+]
+
+ext.stinson_rx = [
+        artifact        : 'rx',
+        versionDesc     : "Stinson Rx 1.0.0$alias"
+]
+
+ext.stinson_rx_android = [
+        artifact        : 'rx-android',
+        versionDesc     : "Stinson Rx Android 1.0.0$alias"
 ]
