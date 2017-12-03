@@ -26,7 +26,7 @@ library for executing commands.
 
 This module includes extended version of presenter and state with support of Android lifecycle and `Parcelable` interface.
 Also, this module contains prepared classes for `AppCompatActivity`, `Activity` and both `Fragment` classes, from support library and normal SDK.
-With help of these classes, you can concentrate on writing logic, as all binding between activities and presenters are already implemented.
+With help of these classes you can concentrate on writing logic, as all binding between activities and presenters is already implemented.
 
 # Setup
 
