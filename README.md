@@ -1,4 +1,6 @@
 # Stinson
+[![GitHub version](https://badge.fury.io/gh/boennemann%2Fbadges.svg)](http://badge.fury.io/gh/boennemann%2Fbadges)
+[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.0-blue.svg)](http://kotlinlang.org/)
 
 Elm architecture on Kotlin steroids for Android
 
@@ -34,7 +36,7 @@ To use this library, for Maven users add these lines to your `.pom` file:
 <dependency>
   <groupId>com.alviere.stinson</groupId>
   <artifactId>core</artifactId>
-  <version>1.0.0</version>
+  <version>x.y.z</version>
   <type>pom</type>
 </dependency>
 
@@ -42,7 +44,7 @@ To use this library, for Maven users add these lines to your `.pom` file:
 <dependency>
   <groupId>com.alviere.stinson</groupId>
   <artifactId>rx</artifactId>
-  <version>1.0.0</version>
+  <version>x.y.z</version>
   <type>pom</type>
 </dependency>
 
@@ -50,7 +52,7 @@ To use this library, for Maven users add these lines to your `.pom` file:
 <dependency>
   <groupId>com.alviere.stinson</groupId>
   <artifactId>rx-android</artifactId>
-  <version>1.0.0</version>
+  <version>x.y.z</version>
   <type>pom</type>
 </dependency>
 ```
@@ -62,14 +64,14 @@ repositories {
 
 dependencies {
     // For Gradle Version below 3.0.0
-    compile 'com.alviere.stinson:core:1.0.0' // Framework only
-    compile 'com.alviere.stinson:rx:1.0.0' // Rx implementation
-    compile 'com.alviere.stinson:rx-android:1.0.0' // Rx with Android support implementation
+    compile 'com.alviere.stinson:core:x.y.z' // Framework only
+    compile 'com.alviere.stinson:rx:x.y.z' // Rx implementation
+    compile 'com.alviere.stinson:rx-android:x.y.z' // Rx with Android support implementation
 
     // For Gradle Version 3.0.0 or above
-    implementation 'com.alviere.stinson:core:1.0.0' // Framework only
-    implementation 'com.alviere.stinson:rx:1.0.0' // Rx implementation
-    implementation 'com.alviere.stinson:rx-android:1.0.0' // Rx with Android support implementation
+    implementation 'com.alviere.stinson:core:x.y.z' // Framework only
+    implementation 'com.alviere.stinson:rx:x.y.z' // Rx implementation
+    implementation 'com.alviere.stinson:rx-android:x.y.z' // Rx with Android support implementation
 }
 ```
 
