@@ -1,0 +1,11 @@
+apply plugin: 'kotlin'
+
+apply from: "$rootDir/buildsystem/dependencies.gradle"
+
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin'
+}
+
+dependencies {
+    implementation libraries.kotlin_stdlib
+}

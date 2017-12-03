@@ -1,0 +1,14 @@
+ext.versions = [
+        android_gradle      : '3.0.1',
+        kotlin              : '1.2.0',
+        rx                  : '2.1.7',
+        support             : '27.0.2'
+]
+
+ext.libraries = [
+        android_gradle      : "com.android.tools.build:gradle:$versions.android_gradle",
+        kotlin_gradle       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
+        kotlin_stdlib       : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
+        rx                  : "io.reactivex.rxjava2:rxjava:$versions.rx",
+        support_appcompat   : "com.android.support:appcompat-v7:$versions.support"
+]
