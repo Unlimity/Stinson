@@ -1,5 +1,5 @@
 # Stinson
-[![GitHub version](https://badge.fury.io/gh/boennemann%2Fbadges.svg?tag=latest)](http://badge.fury.io/gh/boennemann%2Fbadges)
+[![Bintray version badge](https://img.shields.io/bintray/v/asciidoctor/maven/asciidoctorj.svg)](https://bintray.com/alviere/maven/stinson)
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.0-blue.svg)](http://kotlinlang.org/)
 
 Elm architecture on Kotlin steroids for Android
