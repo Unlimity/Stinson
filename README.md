@@ -29,7 +29,7 @@ With help of these classes, you can concentrate on writing logic, as all binding
 # Setup
 
 To use this library, for Maven users add these lines to your `.pom` file:
-```maven
+```xml
 // Framework only
 <dependency>
   <groupId>com.alviere.stinson</groupId>
