@@ -1,5 +1,5 @@
 # Stinson
-[![Bintray version badge](https://img.shields.io/bintray/v/asciidoctor/maven/asciidoctorj.svg)](https://bintray.com/alviere/maven/stinson)
+[![Bintray version badge](https://img.shields.io/bintray/v/alviere/maven/stinson.svg)](https://bintray.com/alviere/maven/stinson)
 [![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.0-blue.svg)](http://kotlinlang.org/)
 
 Elm architecture on Kotlin steroids for Android
