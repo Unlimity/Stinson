@@ -21,12 +21,7 @@ abstract class StinsonRxActivity<V : View, S : ParcelableState, out P : AndroidR
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter.attach(view)
-        presenter.onCreate()
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        savedInstanceState?.run { presenter.onRestoreInstanceState(this) }
+        presenter.onCreate(savedInstanceState)
     }
 
     override fun onStart() {

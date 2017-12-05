@@ -14,7 +14,7 @@ android {
     }
 
     sourceSets {
-        main.kotlin.srcDirs += 'main/src/kotlin'
+        main.java.srcDirs += 'src/main/kotlin'
     }
 
     buildTypes {
@@ -31,6 +31,7 @@ dependencies {
 
     implementation libraries.kotlin_stdlib
     implementation libraries.support_appcompat
+    implementation libraries.rx
 }
 
 apply plugin: 'com.github.dcendents.android-maven'
@@ -70,7 +71,7 @@ version = stinson.version
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
-    from android.sourceSets.main.kotlin.srcDirs
+    from android.sourceSets.main.java.srcDirs
 }
 
 //task javadocJar(type: Jar, dependsOn: dokka) {

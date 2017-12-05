@@ -3,8 +3,8 @@ package com.alviere.stinson
 import java.util.*
 
 abstract class Stinson<S : State, E : Executor> {
-    protected lateinit var component: Component<S, E>
-    protected lateinit var state: S
+    lateinit var component: Component<S, E>
+    lateinit var state: S
 
     protected val queue = ArrayDeque<Message>()
 
