@@ -32,6 +32,8 @@ abstract class AndroidRxPresenter<V : View, S : ParcelableState>(stinson: RxStin
 
     @CallSuper
     fun onDestroy() {
+        stinson.dispose()
+
         if (!subsription.isDisposed) {
             subsription.dispose()
         }

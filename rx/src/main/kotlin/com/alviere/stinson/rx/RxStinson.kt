@@ -7,20 +7,20 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 
-class RxStinson<S : State>(private val scheduler: Scheduler) : Stinson<S, RxExecutor>() {
+class RxStinson<S : State>(private val observeScheduler: Scheduler) : Stinson<S, RxExecutor>() {
     private val subject = BehaviorSubject.create<Pair<Message, S>>()
+    private val subscriptions = mutableMapOf<String, Disposable>()
 
     override fun init(component: Component<S, RxExecutor>, state: S): Disposable {
         this.component = component
         this.state = state
 
+        component.subscribe(state)
+
         return subject
+                .observeOn(observeScheduler)
                 .map { (message, state) ->
                     component.update(message, state)
-                }
-                .observeOn(scheduler)
-                .doOnNext { (_, state) ->
-                    component.render(state)
                 }
                 .doOnNext { (_, state) ->
                     this.state = state
@@ -29,6 +29,8 @@ class RxStinson<S : State>(private val scheduler: Scheduler) : Stinson<S, RxExec
                         queue.removeFirst()
                     }
 
+                    component.render(state)
+                    component.subscribe(state)
                     loop()
                 }
                 .filter { (command, _) -> command !is None }
@@ -39,11 +41,10 @@ class RxStinson<S : State>(private val scheduler: Scheduler) : Stinson<S, RxExec
                             .onErrorResumeNext { error -> Single.just(Error(error, command)) }
                             .toObservable()
                 }
-                .observeOn(scheduler)
+                .observeOn(observeScheduler)
                 .subscribe { message ->
                     when (message) {
-                        is Idle -> {
-                        } // Do nothing
+                        is Idle -> {} // Do nothing
                         else -> queue.addLast(message)
                     }
 
@@ -57,6 +58,22 @@ class RxStinson<S : State>(private val scheduler: Scheduler) : Stinson<S, RxExec
         if (queue.size == 1) {
             next()
         }
+    }
+
+    override fun <P> subscribe(subscription: Subscription<P>, params: P) {
+        if (subscription !is RxSubscription) {
+            throw IllegalArgumentException("You can't pass non RxSubscription to RxStinson!")
+        }
+
+        val key = subscription.javaClass.canonicalName
+
+        subscriptions[key]?.run { if (!isDisposed) dispose() }
+        subscriptions.put(key, subscription.create(params).subscribe { accept(it) })
+    }
+
+    override fun dispose() {
+        subscriptions.forEach { (_, value) -> if (!value.isDisposed) value.dispose() }
+        subscriptions.clear()
     }
 
     private fun loop() {
