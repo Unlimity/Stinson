@@ -67,8 +67,10 @@ class RxStinson<S : State>(private val observeScheduler: Scheduler) : Stinson<S,
 
         val key = subscription.javaClass.canonicalName
 
-        subscriptions[key]?.run { if (!isDisposed) dispose() }
-        subscriptions.put(key, subscription.create(params).subscribe { accept(it) })
+        subscription.request(params)?.run {
+            subscriptions[key]?.run { if (!isDisposed) dispose() }
+            subscriptions.put(key, this.subscribe { accept(it) })
+        }
     }
 
     override fun dispose() {
