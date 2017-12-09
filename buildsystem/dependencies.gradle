@@ -4,7 +4,10 @@ ext.versions = [
         bintray             : '1.7.3',
         maven               : '1.5',
         rx                  : '2.1.7',
-        support             : '27.0.2'
+        rx_android          : '2.0.1',
+        support             : '27.0.2',
+        koin                : '0.6.1',
+        stinson             : '1.0.3'
 ]
 
 ext.libraries = [
@@ -14,7 +17,11 @@ ext.libraries = [
         bintray             : "com.jfrog.bintray.gradle:gradle-bintray-plugin:$versions.bintray",
         maven               : "com.github.dcendents:android-maven-gradle-plugin:$versions.maven",
         rx                  : "io.reactivex.rxjava2:rxjava:$versions.rx",
-        support_appcompat   : "com.android.support:appcompat-v7:$versions.support"
+        rx_android          : "io.reactivex.rxjava2:rxandroid:$versions.rx_android",
+        support_appcompat   : "com.android.support:appcompat-v7:$versions.support",
+        support_design      : "com.android.support:design:$versions.support",
+        koin                : "org.koin:koin-android:$versions.koin",
+        stinson             : "com.alviere.stinson:rx-android:$versions.stinson"
 ]
 
 def alias = System.getenv('BINTRAY_ALIAS')
@@ -28,22 +35,22 @@ ext.stinson = [
         name            : 'stinson',
         description     : 'Elm architecture on Kotlin steroids for Android',
         versionCode     : 2,
-        version         : "1.0.1$alias",
+        version         : "1.0.3$alias",
         site            : 'https://github.com/alviere/stinson',
         github          : 'https://github.com/alviere/stinson.git'
 ]
 
 ext.stinson_core = [
         artifact        : 'core',
-        versionDesc     : "Stinson Core 1.0.1$alias"
+        versionDesc     : "Stinson Core 1.0.3$alias"
 ]
 
 ext.stinson_rx = [
         artifact        : 'rx',
-        versionDesc     : "Stinson Rx 1.0.1$alias"
+        versionDesc     : "Stinson Rx 1.0.3$alias"
 ]
 
 ext.stinson_rx_android = [
         artifact        : 'rx-android',
-        versionDesc     : "Stinson Rx Android 1.0.1$alias"
+        versionDesc     : "Stinson Rx Android 1.0.3$alias"
 ]

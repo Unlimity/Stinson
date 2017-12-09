@@ -9,12 +9,12 @@ class RxSubscription<in P>(private val lambda: (P) -> Observable<Message>) : Sub
     private var parameters: P? = null
 
     override fun request(params: P): Observable<Message>? {
-        return subscription?.takeIf {
-            params == parameters
-        } ?: create(params).apply {
-            subscription = this
-            parameters = params
-        }
+        return if (subscription == null || params != parameters) {
+            create(params).apply {
+                subscription = this
+                parameters = params
+            }
+        } else null
     }
 
     override fun create(params: P): Observable<Message> = lambda(params)

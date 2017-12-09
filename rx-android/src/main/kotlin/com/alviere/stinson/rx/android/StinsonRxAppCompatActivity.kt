@@ -7,19 +7,17 @@ import com.alviere.stinson.View
 abstract class StinsonRxAppCompatActivity<V : View, S : ParcelableState, out P : AndroidRxPresenter<V, S>>
     : AppCompatActivity() {
 
-    protected val view: V
-    protected val presenter: P
-
-    init {
-        view = provideView()
-        presenter = providePresenter()
-    }
+    private lateinit var view: V
+    private lateinit var presenter: P
 
     protected abstract fun providePresenter(): P
     protected abstract fun provideView(): V
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        view = provideView()
+        presenter = providePresenter()
+
         presenter.attach(view)
         presenter.onCreate(savedInstanceState)
     }
@@ -61,6 +59,9 @@ abstract class StinsonRxAppCompatActivity<V : View, S : ParcelableState, out P :
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.onDestroy()
+
+        if (isFinishing) {
+            presenter.onDestroy()
+        }
     }
 }

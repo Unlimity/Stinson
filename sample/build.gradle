@@ -1,0 +1,37 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+apply from: "$rootDir/buildsystem/dependencies.gradle"
+
+androidExtensions {
+    experimental = true
+}
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        applicationId "com.alviere.stinson.sample"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation libraries.kotlin_stdlib
+    implementation libraries.support_design
+    implementation libraries.stinson
+    implementation libraries.rx
+    implementation libraries.rx_android
+    implementation libraries.koin
+}

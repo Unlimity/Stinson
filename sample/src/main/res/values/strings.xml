@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Stinson Sample</string>
+
+    <string name="login_edit_hint">Login</string>
+    <string name="password_edit_hint">Password</string>
+    <string name="login_button_text">SIGN IN</string>
+
+    <string name="error_length">Minimum length is 6 characters</string>
+    <string name="error_number">Should contain at least 1 number</string>
+
+    <string name="login_success">Login success!</string>
+    <string name="login_failure">Login failed!</string>
+
+    <string name="empty_string"></string>
+</resources>

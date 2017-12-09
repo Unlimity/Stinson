@@ -7,30 +7,30 @@ import com.alviere.stinson.View
 abstract class StinsonRxFragment<V : View, S : ParcelableState, out P : AndroidRxPresenter<V, S>>
     : Fragment() {
 
-    protected val view: V
-    protected val presenter: P
-
-    init {
-        view = provideView()
-        presenter = providePresenter()
-    }
+    private lateinit var view: V
+    private lateinit var presenter: P
 
     protected abstract fun providePresenter(): P
     protected abstract fun provideView(): V
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter.attach(view)
+        view = provideView()
+        presenter = providePresenter()
+
         presenter.onCreate(savedInstanceState)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(v: android.view.View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(v, savedInstanceState)
 
         if (!presenter.isAttached()) {
             presenter.attach(view)
         }
+    }
 
+    override fun onStart() {
+        super.onStart()
         presenter.onStart()
     }
 
@@ -61,6 +61,9 @@ abstract class StinsonRxFragment<V : View, S : ParcelableState, out P : AndroidR
 
     override fun onDestroy() {
         super.onDestroy()
-        presenter.onDestroy()
+
+        if (isRemoving) {
+            presenter.onDestroy()
+        }
     }
 }

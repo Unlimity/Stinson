@@ -16,7 +16,11 @@ abstract class AndroidRxPresenter<V : View, S : ParcelableState>(stinson: RxStin
     @CallSuper
     fun onCreate(savedInstanceState: Bundle?) {
         val state = savedInstanceState?.getParcelable(KEY_STATE) ?: initialState()
-        subsription = stinson.init(this, state) as Disposable
+
+        if (!::subsription.isInitialized) {
+            subsription = stinson.init(this, state) as Disposable
+        }
+
         stinson.accept(Init())
     }
 

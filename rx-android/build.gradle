@@ -26,8 +26,8 @@ android {
 }
 
 dependencies {
-    implementation project(':core')
-    implementation project(':rx')
+    compile project(':core')
+    compile project(':rx')
 
     implementation libraries.kotlin_stdlib
     implementation libraries.support_appcompat

@@ -7,7 +7,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation project(':core')
+    compile project(path: ':core')
 
     implementation libraries.kotlin_stdlib
     implementation libraries.rx
