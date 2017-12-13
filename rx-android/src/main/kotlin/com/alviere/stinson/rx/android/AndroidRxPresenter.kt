@@ -6,10 +6,11 @@ import com.alviere.stinson.Init
 import com.alviere.stinson.View
 import com.alviere.stinson.rx.RxPresenter
 import com.alviere.stinson.rx.RxStinson
+import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 
-abstract class AndroidRxPresenter<V : View, S : ParcelableState>(stinson: RxStinson<S>)
-    : RxPresenter<V, S>(stinson) {
+abstract class AndroidRxPresenter<V : View, S : ParcelableState>(observeScheduler: Scheduler)
+    : RxPresenter<V, S>(observeScheduler) {
 
     private lateinit var subsription: Disposable
 
