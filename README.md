@@ -114,7 +114,7 @@ Executor is an additional abstraction layer that is built to enable support of d
 
 ### Subsriptions
 
-Subscription is another component of Elm architecture. It allows to execute certain tasks that produce messages after every change in presenter's state based on provided parameters. Most popular case in using this component is filtering:
+Subscription is another component of Elm architecture. It allows to execute certain tasks that produce messages after every change in presenter's state based on provided parameters. Most popular case of using this component is filtering:
 
 ```kotlin
 val subscription = RxSubscription<String> { query ->
@@ -169,7 +169,7 @@ There are several methods that should be overriden:
     }
 ```
 
-`render` function is invoked by `Stinson` on every message that has been processed. Here you interact with your `View` and apply your current view state. Please note, that `view` property of `Presenter` is mutable and nullable. Thus it should be accessed view safe call operator `?`:
+`render` function is invoked by `Stinson` on every message that has been processed. Here you interact with your `View` and apply your current view state. Please note, that `view` property of `Presenter` is mutable and nullable. Thus it should be accessed via safe call operator `?`:
 
 ```kotlin
     override fun render(state: LoginState) {
