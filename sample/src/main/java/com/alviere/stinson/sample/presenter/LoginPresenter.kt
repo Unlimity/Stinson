@@ -5,17 +5,17 @@ import com.alviere.stinson.Idle
 import com.alviere.stinson.Message
 import com.alviere.stinson.None
 import com.alviere.stinson.rx.RxExecutor
-import com.alviere.stinson.rx.RxStinson
 import com.alviere.stinson.rx.android.AndroidRxPresenter
 import com.alviere.stinson.sample.R
 import com.alviere.stinson.sample.state.LoginState
 import com.alviere.stinson.sample.view.LoginView
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
-class LoginPresenter(stinson: RxStinson<LoginState>)
-    : AndroidRxPresenter<LoginView, LoginState>(stinson) {
+class LoginPresenter
+    : AndroidRxPresenter<LoginView, LoginState>(AndroidSchedulers.mainThread()) {
 
     override fun update(message: Message, state: LoginState): Pair<Command, LoginState> {
         return when (message) {

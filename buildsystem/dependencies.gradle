@@ -7,7 +7,7 @@ ext.versions = [
         rx_android          : '2.0.1',
         support             : '27.0.2',
         koin                : '0.6.1',
-        stinson             : '1.0.3'
+        stinson             : '1.0.4'
 ]
 
 ext.libraries = [
@@ -35,22 +35,22 @@ ext.stinson = [
         name            : 'stinson',
         description     : 'Elm architecture on Kotlin steroids for Android',
         versionCode     : 2,
-        version         : "1.0.3$alias",
+        version         : "1.0.4$alias",
         site            : 'https://github.com/alviere/stinson',
         github          : 'https://github.com/alviere/stinson.git'
 ]
 
 ext.stinson_core = [
         artifact        : 'core',
-        versionDesc     : "Stinson Core 1.0.3$alias"
+        versionDesc     : "Stinson Core 1.0.4$alias"
 ]
 
 ext.stinson_rx = [
         artifact        : 'rx',
-        versionDesc     : "Stinson Rx 1.0.3$alias"
+        versionDesc     : "Stinson Rx 1.0.4$alias"
 ]
 
 ext.stinson_rx_android = [
         artifact        : 'rx-android',
-        versionDesc     : "Stinson Rx Android 1.0.3$alias"
+        versionDesc     : "Stinson Rx Android 1.0.4$alias"
 ]
