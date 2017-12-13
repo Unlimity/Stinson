@@ -15,6 +15,22 @@ Development of this library was inspired by [@sgrekov](https://github.com/sgreko
 
 In general, Stinson is classic MVP pattern framework with application of Elm architecture on the presentation layer. In this how-to we will use the `rx-android` implementation to showcase the capabilities of this library.
 
+### Elm architecture
+
+Elm architecture in a nutshell is a system which is based on messages, states and commands. The base components of Elm architecture are:
+
+ - Main component (`Stinson`), which is responsible for managing message que, passing updates through presenter and executing commands
+ - Messages, base components which represent certain interactions or evernts
+ - Commands, base components which represent an action that need to be taken
+ 
+ The current pipeline of Stinson library is presented below:
+ 
+ ```
+ View -> Presenter.interaction() -> Stinson.accept(message) -> Presenter.update(message, state): Pair<Command, State> ->
+ Presenter.render(state) -> Presenter.subscribe(state) -> Presenter.executor(command): Executor ->
+ Executor.execute(): Message -> Stinson.accept(message)
+ ```
+
 ### View
 
 Defining a view is very simple. Just create an interface that extends Stinson's `View` interface:
@@ -103,6 +119,24 @@ Executor is an additional abstraction layer that is built to enable support of d
     }
 ```
 
+### Subsriptions
+
+Subscription is another component of Elm architecture. It allows to execute certain tasks that produce messages after every change in presenter's state based on provided parameters. Most popular case in using this component is filtering:
+
+```kotlin
+val subscription = RxSubscription<String> { query ->
+    Single.create<Message> {
+        it.onSuccess(FilterMessage(provider.filter(query)))
+    }
+}
+
+override fun subscribe(state: State) {
+    stinson.subscribe(subscription, state.query)
+}
+```
+
+Subscription will be executed only after first access to instance and after every change of parameters.
+
 ### Presenter
 
 Presenters that use Stinson should extend from `AndroidRxPresenter<View, State>` class and provide instance of `Stinson` class:
@@ -111,6 +145,166 @@ Presenters that use Stinson should extend from `AndroidRxPresenter<View, State>`
 class LoginPresenter(stinson: RxStinson<LoginState>)
     : AndroidRxPresenter<LoginView, LoginState>(stinson) {
 ```
+
+There are several methods that should be overriden:
+
+```kotlin
+    abstract fun initialState(): State // From core framework's Presenter class
+    fun update(message: Message, state: State): Pair<Command, State> // From Component interface
+    fun render(state: State) // From Component interface
+    fun subscribe(state: State) // From Component interface
+    fun executor(command: Command): Executor // From Component interface
+```
+
+`initialState` function is pretty straightforward. Here you just return the initial state of your view:
+
+```kotlin
+    override fun initialState() = LoginState()
+```
+
+`update` function is used to process incoming messages from `Stinson` and make corresponding changes to the state plus provide command that should be executed in response, if necessary:
+
+```kotlin
+    override fun update(message: Message, state: LoginState): Pair<Command, LoginState> {
+        return when (message) {
+            is LoginTextMessage -> Pair(None(), state.copy(login = message.text))
+            is PasswordTextMessage -> Pair(None(), state.copy(password = message.text))
+            is LoginButtonClickMessage -> tryLogin(state)
+            is LoginResultMessage -> processLogin(message, state)
+            else -> Pair(None(), state)
+        }
+    }
+```
+
+`render` function is invoked by `Stinson` on every message that has been processed. Here you interact with your `View` and apply your current view state. Please note, that `view` property of `Presenter` is mutable and nullable. Thus it should be accessed view safe call operator `?`:
+
+```kotlin
+    override fun render(state: LoginState) {
+        view?.run {
+            setLoginText(state.login)
+            setLoginErrorText(state.loginError)
+            setLoginErrorEnabled(state.loginErrorEnabled)
+
+            setPasswordText(state.password)
+            setPasswordErrorText(state.passwordError)
+            setPasswordErrorEnabled(state.passwordErrorEnabled)
+
+            setLoading(state.isLoading)
+        }
+    }
+```
+
+`subscribe` function is invoked by `Stinson` on every message that has been processed. Here you can provide new parameters for your subsription, thus triggering execution of asynchronous tasks that you may have:
+
+```kotlin
+override fun subscribe(state: State) {
+    stinson.subscribe(subscription, state.query)
+}
+```
+
+`executor` function is invoked by `Stinson` on every command that is passed through `update` function and which is not instance of `None`. This function must return corresponding executor for possible command that your presenter can issue:
+
+```kotlin
+    override fun executor(command: Command): RxExecutor {
+        return when (command) {
+            is LoginCommand -> executeLogin(command)
+            else -> RxExecutor { Single.just(Idle()) }
+        }
+    }
+```
+
+There is also Android specific functions defined in `AndroidRxPresenter` class. Those are not abstract and not obligated to be overriden:
+
+```kotlin
+    @CallSuper
+    fun onCreate(savedInstanceState: Bundle?) {}
+
+    fun onStart() {}
+    fun onResume() {}
+    fun onPause() {}
+    fun onStop() {}
+
+    @CallSuper
+    fun onSaveInstanceState(savedInstanceState: Bundle) {}
+
+    @CallSuper
+    fun onDestroy() {}
+```
+
+All these functions are invoked automatically for you if you use provided activities and fragments as `View` implementations.
+
+### View implementations
+
+Finally, when everything is done you are ready to implement the view and get things going. `rx-android` implementation provides you with four classes that can help you concentrate on writing logic, instead of paying attention to state saving, dealing with configuration changes and binding to your presenter. These classes are: `StinsonRxActivity`, `StinsonRxAppCompatActivity`, `StinsonRxFragment` and `StinsonRxSupportFragment`. Here's the example using `StinsonRxActivity` as base class:
+
+```kotlin
+class LoginActivity : StinsonRxActivity<LoginView, LoginState, LoginPresenter>(), LoginView {
+    private val presenter by inject<LoginPresenter>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+        registerTextWatchers()
+
+        passwordEdit.isPasswordVisibilityToggleEnabled = true
+        loginButton.setOnClickListener { presenter.loginButtonClicked() }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        if (isFinishing) {
+            releaseContext(LoginModule.CONTEXT_NAME)
+        }
+    }
+
+    override fun setLoginText(text: String) {
+        loginEdit.editText?.takeIf { text != loginEdit.editText?.text.toString() }?.setText(text)
+    }
+
+    override fun setLoginErrorText(text: Int) {
+        loginEdit.error = getString(text)
+    }
+
+    override fun setLoginErrorEnabled(enabled: Boolean) {
+        loginEdit.isErrorEnabled = enabled
+    }
+
+    override fun setPasswordText(text: String) {
+        passwordEdit.editText?.takeIf { text != passwordEdit.editText?.text.toString() }?.setText(text)
+    }
+
+    override fun setPasswordErrorText(text: Int) {
+        passwordEdit.error = getString(text)
+    }
+
+    override fun setPasswordErrorEnabled(enabled: Boolean) {
+        passwordEdit.isErrorEnabled = enabled
+    }
+
+    override fun setLoading(loading: Boolean) {
+        loginEdit.isEnabled = !loading
+        passwordEdit.isEnabled = !loading
+        loginButton.isEnabled = !loading
+        loginButton.text = if (loading) "" else getString(R.string.login_button_text)
+        progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+    }
+
+    override fun showSnackbar(text: Int) {
+        Snackbar.make(contentView, text, Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun providePresenter() = presenter
+
+    override fun provideView() = this
+}
+```
+
+So, when using one of the four classes you need to specify type of `View`, `State` and `Presenter` that you're interacting with, as well as override two abstract methods: `providePresenter()` and `provideView()`.
+
+### Important
+
+When all of the components are used correctly, all view attaching/detaching, state saving and lifecycle methods invocations are done automatically, which allows us to concentrate on implementing interesting parts of our apps. Please refer to the sample for further understanding of how to use this library.
 
 # Modules
 
