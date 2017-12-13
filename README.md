@@ -53,7 +53,7 @@ interface LoginView : View {
 
 ### State
 
-State in Stinson can be referred as `ViewModel` in other popular MVP framework libraries. This classes represent the current state of your view. In Kotlin, it is very convinient to use data classes for that purpose. In `rx-android` implementation, there is `ParcelableState` interface which extends Stinson's `State` and Android's `Parcelable` interface to enable state saving through Android components' lifecycle:
+State in Stinson can be referred as `ViewModel` in other popular MVP framework libraries. These classes represent the current state of your view. In Kotlin, it is very convinient to use data classes for that purpose. In `rx-android` implementation, there is a `ParcelableState` interface which extends Stinson's `State` and Android's `Parcelable` interfaces to enable state saving through Android components' lifecycle:
 
 ```kotlin
 @Parcelize
@@ -71,21 +71,14 @@ data class LoginState(
 
 ### Stinson
 
-`Stinson` class is the main component of Elm architecture. It can be described as message queue manager and should be provided to every presenter that is built on Stinson library. Classicaly, these kind of dependencies are provided through DI libraries. In our case, we are using [Koin](https://github.com/Ekito/koin):
+`Stinson` class is the main component of Elm architecture. It can be described as message queue manager and should be provided for every presenter that is built on Stinson library. For `RxPresenter` and `AndroidRxPresenter` it is done automatically, all you have to do is provide observe scheduler: 
 
 ```kotlin
-class LoginModule : AndroidModule() {
-    override fun context() = applicationContext {
-        context(CONTEXT_NAME) {
-            provide {
-                RxStinson<LoginState>(AndroidSchedulers.mainThread())
-            }
-        }
-    }
-}
+class LoginPresenter
+    : AndroidRxPresenter<LoginView, LoginState>(AndroidSchedulers.mainThread()) {
 ```
 
-As you can see, `Stinson` class takes in generic type of `State` interface. So for every state that you have in your app, you should provide corresponding `Stinson` instance. It is not very comfortable, but it is done to avoid unnecessary state instance casting in your presenters.
+`Stinson` instance will be available in your presenter as a `stinson` protected property.
 
 ### Messages
 
@@ -139,11 +132,11 @@ Subscription will be executed only after first access to instance and after ever
 
 ### Presenter
 
-Presenters that use Stinson should extend from `AndroidRxPresenter<View, State>` class and provide instance of `Stinson` class:
+Presenters that use Stinson should extend from `AndroidRxPresenter<View, State>` class and provide Rx observer scheduler:
 
 ```kotlin
-class LoginPresenter(stinson: RxStinson<LoginState>)
-    : AndroidRxPresenter<LoginView, LoginState>(stinson) {
+class LoginPresenter
+    : AndroidRxPresenter<LoginView, LoginState>(AndroidSchedulers.mainThread()) {
 ```
 
 There are several methods that should be overriden:
@@ -233,7 +226,7 @@ There is also Android specific functions defined in `AndroidRxPresenter` class. 
 
 All these functions are invoked automatically for you if you use provided activities and fragments as `View` implementations.
 
-### View implementations
+### View implementation
 
 Finally, when everything is done you are ready to implement the view and get things going. `rx-android` implementation provides you with four classes that can help you concentrate on writing logic, instead of paying attention to state saving, dealing with configuration changes and binding to your presenter. These classes are: `StinsonRxActivity`, `StinsonRxAppCompatActivity`, `StinsonRxFragment` and `StinsonRxSupportFragment`. Here's the example using `StinsonRxActivity` as base class:
 
