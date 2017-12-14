@@ -1,6 +1,6 @@
 # Stinson
 [![Github tag version badge](https://img.shields.io/github/tag/alviere/stinson.svg)](https://bintray.com/alviere/maven/stinson)
-[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.0-blue.svg)](http://kotlinlang.org/)
+[![Kotlin version badge](https://img.shields.io/badge/kotlin-1.2.10-blue.svg)](http://kotlinlang.org/)
 
 Elm architecture on Kotlin steroids for Android
 
@@ -13,14 +13,14 @@ Development of this library was inspired by [@sgrekov](https://github.com/sgreko
 
 # How to use
 
-In general, Stinson is classic MVP pattern framework with application of Elm architecture on the presentation layer. In this how-to we will use the `rx-android` implementation to showcase the capabilities of this library.
+In general, Stinson is classic MVP pattern framework with application of Elm architecture on the presentation layer. In this how-to we will use the `rx` and `android` implementations to showcase the capabilities of this library.
 
 ### Elm architecture
 
-Elm architecture in a nutshell is a system which is based on messages, states and commands. The base components of Elm architecture are:
+Elm architecture in a nutshell is a system that is based on messages, states and commands and guarantees state preserving and unidirectional data flow. The base components of Elm architecture are:
 
- - Main component (`Stinson`), which is responsible for managing message que, passing updates through presenter and executing commands
- - Messages, base components which represent certain interactions or evernts
+ - Main component (`Stinson`), which is responsible for managing message queue, passing updates through presenter and executing commands
+ - Messages, base components which represent certain interactions or events
  - Commands, base components which represent an action that need to be taken
  
  The current pipeline of Stinson library is presented below:
@@ -53,7 +53,7 @@ interface LoginView : View {
 
 ### State
 
-State in Stinson can be referred as `ViewModel` in other popular MVP framework libraries. These classes represent the current state of your view. In Kotlin, it is very convinient to use data classes for that purpose. In `rx-android` implementation, there is a `ParcelableState` interface which extends Stinson's `State` and Android's `Parcelable` interfaces to enable state saving through Android components' lifecycle:
+State in Stinson can be referred as `ViewModel` in other popular MVP framework libraries. These classes represent the current state of your view. In Kotlin, it is very convinient to use data classes for that purpose. In `android` implementation, there is a `ParcelableState` interface which extends Stinson's `State` and Android's `Parcelable` interfaces to enable state saving through Android components' lifecycle:
 
 ```kotlin
 @Parcelize
@@ -71,18 +71,33 @@ data class LoginState(
 
 ### Stinson
 
-`Stinson` class is the main component of Elm architecture. It can be described as message queue manager and should be provided for every presenter that is built on Stinson library. For `RxPresenter` and `AndroidRxPresenter` it is done automatically, all you have to do is provide observe scheduler: 
+`Stinson` class is the main component of Elm architecture. It can be described as message queue manager and should be provided for every presenter that is built on Stinson library. For `RxPresenter` it is done automatically, but for `AndroidPresenter`, which is built to support different implementation of `Stinson` it still should be provided manually. Classically, this is done by DI frameworks. In our case, we're using [Koin](https://github.com/Ekito/koin): 
 
 ```kotlin
-class LoginPresenter
-    : AndroidRxPresenter<LoginView, LoginState>(AndroidSchedulers.mainThread()) {
+class LoginModule : AndroidModule() {
+    override fun context() = applicationContext {
+        context(CONTEXT_NAME) {
+            provide {
+                RxStinson<LoginState>(AndroidSchedulers.mainThread())
+            }
+
+            provide {
+                LoginPresenter(get())
+            }
+        }
+    }
+
+    companion object {
+        const val CONTEXT_NAME = "LoginActivity"
+    }
+}
 ```
 
 `Stinson` instance will be available in your presenter as a `stinson` protected property.
 
 ### Messages
 
-Messages are one of the main components of Elm architecture. These are indicators of certain UI or data interactions that is going on through your presenter's lifecycle. There are 3 predefined message classes: `Init`, `Idle` and `Error` as well as base class `Message`. In our sample project we have defined these messages:
+Messages are one of the main components of Elm architecture. These are indicators of certain UI or data interactions that is going on through your presenter's lifecycle. There are 2 predefined message objects: `Init`, `Idle` and class `Error` as well as base class `Message`. In our sample project we have defined these messages:
 
 ```kotlin
     class LoginTextMessage(val text: String) : Message()
@@ -93,7 +108,7 @@ Messages are one of the main components of Elm architecture. These are indicator
 
 ### Commands
 
-Commands are another main component of Elm architecture. These classes represent an action that is need to be executed and provide all necessary parameters for that. There is only one predefined command: `None`. In out sample project we have defined only one additional command:
+Commands are another main component of Elm architecture. These classes represent an action that is need to be executed and provide all necessary parameters for that. There is only one predefined command object: `None`. In out sample project we have defined only one additional command:
 
 ```kotlin
     class LoginCommand(val login: String, val password: String) : Command()
@@ -101,7 +116,7 @@ Commands are another main component of Elm architecture. These classes represent
 
 ### Executors
 
-Executor is an additional abstraction layer that is built to enable support of different asynchronous libraries. In our example, we are using RxJava, but you are free to implement whatever approach you like. In `rx-android` implementation, `RxExecutor` is used. It takes lambda function which returns `Single<Message>` and used inside `Stinson` class to execute your actions:
+Executor is an additional abstraction layer that is built to enable support of different asynchronous libraries. In our example, we are using RxJava, but you are free to implement whatever approach you like. In `rx` implementation, `RxExecutor` is used. It takes lambda function which returns `Single<Message>` and used inside `RxStinson` class to execute your actions:
 
 ```kotlin
     return RxExecutor {
@@ -114,7 +129,7 @@ Executor is an additional abstraction layer that is built to enable support of d
 
 ### Subsriptions
 
-Subscription is another component of Elm architecture. It allows to execute certain tasks that produce messages after every change in presenter's state based on provided parameters. Most popular case of using this component is filtering:
+Subscription is another component of Elm architecture. It allows to execute certain tasks that produce messages after every change in presenter's state based on provided parameters. In our sample project we are using `rx` implementation, so our class is `RxSubscription`. Most popular case of using this component is filtering:
 
 ```kotlin
 val subscription = RxSubscription<String> { query ->
@@ -132,11 +147,11 @@ Subscription will be executed only after first access to instance and after ever
 
 ### Presenter
 
-Presenters that use Stinson should extend from `AndroidRxPresenter<View, State>` class and provide Rx observer scheduler:
+Presenters that use Stinson should extend from `Presenter<View, State, Executor>`, `RxPresenter<View, State>` or `AndroidPresenter<View, State, Executor>` classes based on what implementation are you using and provide `Stinson` instance:
 
 ```kotlin
-class LoginPresenter
-    : AndroidRxPresenter<LoginView, LoginState>(AndroidSchedulers.mainThread()) {
+class LoginPresenter(val stinson: RxStinson<LoginState>)
+    : AndroidPresenter<LoginView, LoginState, RxExecutor>(stinson) {
 ```
 
 There are several methods that should be overriden:
@@ -160,11 +175,11 @@ There are several methods that should be overriden:
 ```kotlin
     override fun update(message: Message, state: LoginState): Pair<Command, LoginState> {
         return when (message) {
-            is LoginTextMessage -> Pair(None(), state.copy(login = message.text))
-            is PasswordTextMessage -> Pair(None(), state.copy(password = message.text))
+            is LoginTextMessage -> Pair(None, state.copy(login = message.text))
+            is PasswordTextMessage -> Pair(None, state.copy(password = message.text))
             is LoginButtonClickMessage -> tryLogin(state)
             is LoginResultMessage -> processLogin(message, state)
-            else -> Pair(None(), state)
+            else -> Pair(None, state)
         }
     }
 ```
@@ -201,12 +216,12 @@ override fun subscribe(state: State) {
     override fun executor(command: Command): RxExecutor {
         return when (command) {
             is LoginCommand -> executeLogin(command)
-            else -> RxExecutor { Single.just(Idle()) }
+            else -> RxExecutor { Single.just(Idle) }
         }
     }
 ```
 
-There is also Android specific functions defined in `AndroidRxPresenter` class. Those are not abstract and not obligated to be overriden:
+There is also Android specific functions defined in `AndroidPresenter` class. Those are not abstract and not obligated to be overriden:
 
 ```kotlin
     @CallSuper
@@ -228,7 +243,7 @@ All these functions are invoked automatically for you if you use provided activi
 
 ### View implementation
 
-Finally, when everything is done you are ready to implement the view and get things going. `rx-android` implementation provides you with four classes that can help you concentrate on writing logic, instead of paying attention to state saving, dealing with configuration changes and binding to your presenter. These classes are: `StinsonRxActivity`, `StinsonRxAppCompatActivity`, `StinsonRxFragment` and `StinsonRxSupportFragment`. Here's the example using `StinsonRxActivity` as base class:
+Finally, when everything is done you are ready to implement the view and get things going. `android` implementation provides you with four classes that can help you concentrate on writing logic, instead of paying attention to state saving, dealing with configuration changes and binding to your presenter. These classes are: `StinsonActivity`, `StinsonAppCompatActivity`, `StinsonFragment` and `StinsonSupportFragment`. Here's the example using `StinsonActivity` as base class:
 
 ```kotlin
 class LoginActivity : StinsonRxActivity<LoginView, LoginState, LoginPresenter>(), LoginView {
@@ -307,13 +322,13 @@ This module contains core framework of Elm Architecture.
 
 ### Rx
 
-This module includes Rx implementation of main component (Stinson), thus giving ability to use RxJava 2 as
-library for executing commands.
+This module includes Rx implementation of main component (Stinson), as well as `RxExecutor`, `RxSubscription` and `RxPresenter` thus giving ability to use RxJava 2 as library for executing commands.
 
-### Rx-Android
+### Android
 
 This module includes extended version of presenter and state with support of Android lifecycle and `Parcelable` interface.
 Also, this module contains prepared classes for `AppCompatActivity`, `Activity` and both `Fragment` classes, from support library and normal SDK.
+
 With help of these classes you can concentrate on writing logic, as all binding between activities and presenters is already implemented.
 
 # Setup
@@ -336,10 +351,10 @@ To use this library, for Maven users add these lines to your `.pom` file:
   <type>pom</type>
 </dependency>
 
-// Rx with Android support implementation
+// Android support
 <dependency>
   <groupId>com.alviere.stinson</groupId>
-  <artifactId>rx-android</artifactId>
+  <artifactId>android</artifactId>
   <version>x.y.z</version>
   <type>pom</type>
 </dependency>
@@ -354,12 +369,12 @@ dependencies {
     // For Gradle Version below 3.0.0
     compile 'com.alviere.stinson:core:x.y.z' // Framework only
     compile 'com.alviere.stinson:rx:x.y.z' // Rx implementation
-    compile 'com.alviere.stinson:rx-android:x.y.z' // Rx with Android support implementation
+    compile 'com.alviere.stinson:android:x.y.z' // Android support
 
     // For Gradle Version 3.0.0 or above
     implementation 'com.alviere.stinson:core:x.y.z' // Framework only
     implementation 'com.alviere.stinson:rx:x.y.z' // Rx implementation
-    implementation 'com.alviere.stinson:rx-android:x.y.z' // Rx with Android support implementation
+    implementation 'com.alviere.stinson:android:x.y.z' // Android support
 }
 ```
 
