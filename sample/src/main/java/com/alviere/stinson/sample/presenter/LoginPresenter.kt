@@ -5,7 +5,8 @@ import com.alviere.stinson.Idle
 import com.alviere.stinson.Message
 import com.alviere.stinson.None
 import com.alviere.stinson.rx.RxExecutor
-import com.alviere.stinson.rx.android.AndroidRxPresenter
+import com.alviere.stinson.android.AndroidPresenter
+import com.alviere.stinson.rx.RxStinson
 import com.alviere.stinson.sample.R
 import com.alviere.stinson.sample.state.LoginState
 import com.alviere.stinson.sample.view.LoginView
@@ -14,16 +15,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
-class LoginPresenter
-    : AndroidRxPresenter<LoginView, LoginState>(AndroidSchedulers.mainThread()) {
+class LoginPresenter(stinson: RxStinson<LoginState>)
+    : AndroidPresenter<LoginView, LoginState, RxExecutor>(stinson) {
 
     override fun update(message: Message, state: LoginState): Pair<Command, LoginState> {
         return when (message) {
-            is LoginTextMessage -> Pair(None(), state.copy(login = message.text))
-            is PasswordTextMessage -> Pair(None(), state.copy(password = message.text))
+            is LoginTextMessage -> Pair(None, state.copy(login = message.text))
+            is PasswordTextMessage -> Pair(None, state.copy(password = message.text))
             is LoginButtonClickMessage -> tryLogin(state)
             is LoginResultMessage -> processLogin(message, state)
-            else -> Pair(None(), state)
+            else -> Pair(None, state)
         }
     }
 
@@ -44,7 +45,7 @@ class LoginPresenter
     override fun executor(command: Command): RxExecutor {
         return when (command) {
             is LoginCommand -> executeLogin(command)
-            else -> RxExecutor { Single.just(Idle()) }
+            else -> RxExecutor { Single.just(Idle) }
         }
     }
 
@@ -87,7 +88,7 @@ class LoginPresenter
         val newState = state.run { processPasswordText(processLoginText(this)) }
 
         return if (newState.loginErrorEnabled || newState.passwordErrorEnabled) {
-            Pair(None(), newState)
+            Pair(None, newState)
         } else {
             Pair(LoginCommand(newState.login, newState.password), newState.copy(isLoading = true))
         }
@@ -107,7 +108,7 @@ class LoginPresenter
             showSnackbar(if (message.success) R.string.login_success else R.string.login_failure)
         }
 
-        return Pair(None(), state.copy(isLoading = false))
+        return Pair(None, state.copy(isLoading = false))
     }
 
     override fun subscribe(state: LoginState) {} // no-op

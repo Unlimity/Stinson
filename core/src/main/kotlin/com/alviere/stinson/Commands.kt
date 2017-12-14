@@ -4,4 +4,4 @@ sealed class AbstractCommand
 
 open class Command : AbstractCommand()
 
-class None : Command()
+object None : Command()

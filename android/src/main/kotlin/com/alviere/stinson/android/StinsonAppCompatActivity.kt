@@ -1,10 +1,10 @@
-package com.alviere.stinson.rx.android
+package com.alviere.stinson.android
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.alviere.stinson.View
 
-abstract class StinsonRxAppCompatActivity<V : View, S : ParcelableState, out P : AndroidRxPresenter<V, S>>
+abstract class StinsonAppCompatActivity<V : View, S : ParcelableState, out P : AndroidPresenter<V, S, *>>
     : AppCompatActivity() {
 
     private lateinit var view: V

@@ -1,7 +1,7 @@
 package com.alviere.stinson.sample.state
 
 import android.annotation.SuppressLint
-import com.alviere.stinson.rx.android.ParcelableState
+import com.alviere.stinson.android.ParcelableState
 import com.alviere.stinson.sample.R
 import kotlinx.android.parcel.Parcelize
 

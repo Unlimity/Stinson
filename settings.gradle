@@ -1,1 +1,1 @@
-include ':core', ':rx', ':rx-android', ':sample'
+include ':core', ':rx', ':android', ':sample'

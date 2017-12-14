@@ -1,11 +1,11 @@
-package com.alviere.stinson.rx.android
+package com.alviere.stinson.android
 
-import android.app.Fragment
+import android.app.Activity
 import android.os.Bundle
 import com.alviere.stinson.View
 
-abstract class StinsonRxFragment<V : View, S : ParcelableState, out P : AndroidRxPresenter<V, S>>
-    : Fragment() {
+abstract class StinsonActivity<V : View, S : ParcelableState, out P : AndroidPresenter<V, S, *>>
+    : Activity() {
 
     private lateinit var view: V
     private lateinit var presenter: P
@@ -18,19 +18,17 @@ abstract class StinsonRxFragment<V : View, S : ParcelableState, out P : AndroidR
         view = provideView()
         presenter = providePresenter()
 
+        presenter.attach(view)
         presenter.onCreate(savedInstanceState)
-    }
-
-    override fun onViewCreated(v: android.view.View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(v, savedInstanceState)
-
-        if (!presenter.isAttached()) {
-            presenter.attach(view)
-        }
     }
 
     override fun onStart() {
         super.onStart()
+
+        if (!presenter.isAttached()) {
+            presenter.attach(view)
+        }
+
         presenter.onStart()
     }
 
@@ -62,7 +60,7 @@ abstract class StinsonRxFragment<V : View, S : ParcelableState, out P : AndroidR
     override fun onDestroy() {
         super.onDestroy()
 
-        if (isRemoving) {
+        if (isFinishing) {
             presenter.onDestroy()
         }
     }

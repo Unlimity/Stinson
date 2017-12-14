@@ -1,4 +1,4 @@
-package com.alviere.stinson.rx.android
+package com.alviere.stinson.android
 
 import android.os.Parcelable
 import com.alviere.stinson.State

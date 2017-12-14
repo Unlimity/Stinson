@@ -1,28 +1,22 @@
-package com.alviere.stinson.rx.android
+package com.alviere.stinson.android
 
 import android.os.Bundle
 import android.support.annotation.CallSuper
-import com.alviere.stinson.Init
-import com.alviere.stinson.View
-import com.alviere.stinson.rx.RxPresenter
-import com.alviere.stinson.rx.RxStinson
-import io.reactivex.Scheduler
+import com.alviere.stinson.*
 import io.reactivex.disposables.Disposable
 
-abstract class AndroidRxPresenter<V : View, S : ParcelableState>(observeScheduler: Scheduler)
-    : RxPresenter<V, S>(observeScheduler) {
-
-    private lateinit var subsription: Disposable
+abstract class AndroidPresenter<V : View, S : ParcelableState, E : Executor>(stinson: Stinson<S, E>)
+    : Presenter<V, S, E>(stinson) {
 
     @CallSuper
     fun onCreate(savedInstanceState: Bundle?) {
         val state = savedInstanceState?.getParcelable(KEY_STATE) ?: initialState()
 
-        if (!::subsription.isInitialized) {
-            subsription = stinson.init(this, state) as Disposable
+        if (!stinson.isInitialized()) {
+            stinson.initialize(this, state)
         }
 
-        stinson.accept(Init())
+        stinson.accept(Init)
     }
 
     fun onStart() {}
@@ -38,10 +32,6 @@ abstract class AndroidRxPresenter<V : View, S : ParcelableState>(observeSchedule
     @CallSuper
     fun onDestroy() {
         stinson.dispose()
-
-        if (!subsription.isDisposed) {
-            subsription.dispose()
-        }
     }
 
     companion object {

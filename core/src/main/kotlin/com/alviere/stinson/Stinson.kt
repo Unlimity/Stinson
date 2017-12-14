@@ -8,7 +8,9 @@ abstract class Stinson<S : State, E : Executor> {
 
     protected val queue = ArrayDeque<Message>()
 
-    abstract fun init(component: Component<S, E>, state: S): Any
+    abstract fun initialize(component: Component<S, E>, state: S)
+    abstract fun isInitialized(): Boolean
+
     abstract fun accept(message: Message)
     abstract fun <P> subscribe(subscription: Subscription<P>, params: P)
 

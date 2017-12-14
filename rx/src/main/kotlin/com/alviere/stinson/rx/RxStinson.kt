@@ -11,13 +11,15 @@ class RxStinson<S : State>(private val observeScheduler: Scheduler) : Stinson<S,
     private val subject = BehaviorSubject.create<Pair<Message, S>>()
     private val subscriptions = mutableMapOf<String, Disposable>()
 
-    override fun init(component: Component<S, RxExecutor>, state: S): Disposable {
+    private lateinit var scheduler: Disposable
+
+    override fun initialize(component: Component<S, RxExecutor>, state: S) {
         this.component = component
         this.state = state
 
         component.subscribe(state)
 
-        return subject
+        scheduler = subject
                 .observeOn(observeScheduler)
                 .map { (message, state) ->
                     component.update(message, state)
@@ -44,13 +46,16 @@ class RxStinson<S : State>(private val observeScheduler: Scheduler) : Stinson<S,
                 .observeOn(observeScheduler)
                 .subscribe { message ->
                     when (message) {
-                        is Idle -> {} // Do nothing
+                        is Idle -> {
+                        } // Do nothing
                         else -> queue.addLast(message)
                     }
 
                     loop()
                 }
     }
+
+    override fun isInitialized() = ::scheduler.isInitialized && !scheduler.isDisposed
 
     override fun accept(message: Message) {
         queue.addLast(message)
@@ -74,6 +79,7 @@ class RxStinson<S : State>(private val observeScheduler: Scheduler) : Stinson<S,
     }
 
     override fun dispose() {
+        scheduler.takeIf { !it.isDisposed }?.dispose()
         subscriptions.forEach { (_, value) -> if (!value.isDisposed) value.dispose() }
         subscriptions.clear()
     }

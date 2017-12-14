@@ -28,9 +28,11 @@ android {
 }
 
 dependencies {
+    implementation project(':rx')
+    implementation project(':android')
+
     implementation libraries.kotlin_stdlib
     implementation libraries.support_design
-    implementation libraries.stinson
     implementation libraries.rx
     implementation libraries.rx_android
     implementation libraries.koin

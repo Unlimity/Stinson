@@ -1,10 +1,10 @@
-package com.alviere.stinson.rx.android
+package com.alviere.stinson.android
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import com.alviere.stinson.View
 
-abstract class StinsonRxSupportFragment<V : View, S : ParcelableState, out P : AndroidRxPresenter<V, S>>
+abstract class StinsonSupportFragment<V : View, S : ParcelableState, out P : AndroidPresenter<V, S, *>>
     : Fragment() {
 
     private lateinit var view: V

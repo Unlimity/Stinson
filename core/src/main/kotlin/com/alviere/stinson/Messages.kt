@@ -4,6 +4,7 @@ sealed class AbstractMessage
 
 open class Message : AbstractMessage()
 
-class Init : Message()
-class Idle : Message()
+object Init : Message()
+object Idle : Message()
+
 class Error(val error: Throwable, val command: Command) : Message()

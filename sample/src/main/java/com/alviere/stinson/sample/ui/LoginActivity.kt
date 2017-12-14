@@ -5,7 +5,7 @@ import android.support.design.widget.Snackbar
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import com.alviere.stinson.rx.android.StinsonRxActivity
+import com.alviere.stinson.android.StinsonActivity
 import com.alviere.stinson.sample.R
 import com.alviere.stinson.sample.di.LoginModule
 import com.alviere.stinson.sample.presenter.LoginPresenter
@@ -16,7 +16,7 @@ import org.koin.android.ext.android.inject
 import kotlinx.android.synthetic.main.activity_login.*
 import org.koin.android.ext.android.releaseContext
 
-class LoginActivity : StinsonRxActivity<LoginView, LoginState, LoginPresenter>(), LoginView {
+class LoginActivity : StinsonActivity<LoginView, LoginState, LoginPresenter>(), LoginView {
     private val presenter by inject<LoginPresenter>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
