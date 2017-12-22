@@ -1,5 +1,5 @@
 package com.alviere.stinson
 
-interface Executor {
-    fun execute(): Any
+interface Executor<out T> {
+    fun execute(): T
 }

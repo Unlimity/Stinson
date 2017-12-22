@@ -2,7 +2,6 @@ package com.alviere.stinson.rx
 
 import com.alviere.stinson.*
 import io.reactivex.Scheduler
-import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
@@ -40,7 +39,7 @@ class RxStinson<S : State>(private val observeScheduler: Scheduler) : Stinson<S,
                 .flatMap { (command, _) ->
                     component.executor(command)
                             .execute()
-                            .onErrorResumeNext { error -> Single.just(Error(error, command)) }
+                            .onErrorReturn { error -> Error(error, command) }
                             .toObservable()
                 }
                 .observeOn(observeScheduler)
@@ -65,7 +64,7 @@ class RxStinson<S : State>(private val observeScheduler: Scheduler) : Stinson<S,
         }
     }
 
-    override fun <P> subscribe(subscription: Subscription<P>, params: P) {
+    override fun <P> subscribe(subscription: Subscription<P, *>, params: P) {
         if (subscription !is RxSubscription) {
             throw IllegalArgumentException("You can't pass non RxSubscription to RxStinson!")
         }

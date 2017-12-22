@@ -4,7 +4,9 @@ import com.alviere.stinson.Message
 import com.alviere.stinson.Subscription
 import io.reactivex.Observable
 
-class RxSubscription<in P>(private val lambda: (P) -> Observable<Message>) : Subscription<P> {
+class RxSubscription<in P>(private val lambda: (P) -> Observable<out Message>)
+    : Subscription<P, Observable<Message>> {
+
     private var subscription: Observable<Message>? = null
     private var parameters: P? = null
 
@@ -17,5 +19,5 @@ class RxSubscription<in P>(private val lambda: (P) -> Observable<Message>) : Sub
         } else null
     }
 
-    override fun create(params: P): Observable<Message> = lambda(params)
+    override fun create(params: P): Observable<Message> = lambda(params) as Observable<Message>
 }

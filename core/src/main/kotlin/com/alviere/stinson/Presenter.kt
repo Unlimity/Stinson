@@ -1,6 +1,6 @@
 package com.alviere.stinson
 
-abstract class Presenter<V : View, S : State, E : Executor>(protected val stinson: Stinson<S, E>)
+abstract class Presenter<V : View, S : State, E : Executor<*>>(protected val stinson: Stinson<S, E>)
     : Component<S, E> {
 
     protected var view: V? = null

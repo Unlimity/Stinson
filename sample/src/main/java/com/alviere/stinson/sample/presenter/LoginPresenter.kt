@@ -11,7 +11,6 @@ import com.alviere.stinson.sample.R
 import com.alviere.stinson.sample.state.LoginState
 import com.alviere.stinson.sample.view.LoginView
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
@@ -96,7 +95,7 @@ class LoginPresenter(stinson: RxStinson<LoginState>)
 
     private fun executeLogin(command: LoginCommand): RxExecutor {
         return RxExecutor {
-            Single.create<Message> {
+            Single.create<LoginResultMessage> {
                 Thread.sleep(5000L)
                 it.onSuccess(LoginResultMessage(Random().nextBoolean()))
             }.subscribeOn(Schedulers.io())

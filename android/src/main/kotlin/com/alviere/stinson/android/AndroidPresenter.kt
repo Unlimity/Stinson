@@ -3,9 +3,8 @@ package com.alviere.stinson.android
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import com.alviere.stinson.*
-import io.reactivex.disposables.Disposable
 
-abstract class AndroidPresenter<V : View, S : ParcelableState, E : Executor>(stinson: Stinson<S, E>)
+abstract class AndroidPresenter<V : View, S : ParcelableState, E : Executor<*>>(stinson: Stinson<S, E>)
     : Presenter<V, S, E>(stinson) {
 
     @CallSuper

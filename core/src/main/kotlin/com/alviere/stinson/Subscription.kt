@@ -1,6 +1,6 @@
 package com.alviere.stinson
 
-interface Subscription<in P> {
-    fun request(params: P): Any?
-    fun create(params: P): Any
+interface Subscription<in P, out T> {
+    fun request(params: P): T?
+    fun create(params: P): T
 }

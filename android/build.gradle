@@ -42,7 +42,7 @@ install {
         pom.project {
             packaging 'aar'
             groupId stinson.group
-            artifactId stinson_rx_android.artifact
+            artifactId stinson_android.artifact
 
             name stinson.name
             description stinson.description
@@ -101,7 +101,7 @@ bintray {
 
         version {
             name = stinson.version
-            desc = stinson_rx_android.versionDesc
+            desc = stinson_android.versionDesc
             vcsTag = stinson.version
             released = new Date()
         }

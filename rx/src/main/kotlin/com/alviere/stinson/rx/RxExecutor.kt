@@ -4,6 +4,6 @@ import com.alviere.stinson.Executor
 import com.alviere.stinson.Message
 import io.reactivex.Single
 
-class RxExecutor(private val lambda: () -> Single<Message>) : Executor {
-    override fun execute() = lambda()
+class RxExecutor(private val lambda: () -> Single<out Message>) : Executor<Single<Message>> {
+    override fun execute() = lambda() as Single<Message>
 }
