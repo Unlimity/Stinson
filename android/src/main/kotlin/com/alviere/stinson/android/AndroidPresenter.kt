@@ -8,7 +8,7 @@ abstract class AndroidPresenter<V : View, S : ParcelableState, E : Executor<*>>(
     : Presenter<V, S, E>(stinson) {
 
     @CallSuper
-    fun onCreate(savedInstanceState: Bundle?) {
+    open fun onCreate(savedInstanceState: Bundle?) {
         val state = savedInstanceState?.getParcelable(KEY_STATE) ?: initialState()
 
         if (!stinson.isInitialized()) {
@@ -18,18 +18,18 @@ abstract class AndroidPresenter<V : View, S : ParcelableState, E : Executor<*>>(
         stinson.accept(Init)
     }
 
-    fun onStart() {}
-    fun onResume() {}
-    fun onPause() {}
-    fun onStop() {}
+    open fun onStart() {}
+    open fun onResume() {}
+    open fun onPause() {}
+    open fun onStop() {}
 
     @CallSuper
-    fun onSaveInstanceState(savedInstanceState: Bundle) {
+    open fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putParcelable(KEY_STATE, stinson.state)
     }
 
     @CallSuper
-    fun onDestroy() {
+    open fun onDestroy() {
         stinson.dispose()
     }
 
